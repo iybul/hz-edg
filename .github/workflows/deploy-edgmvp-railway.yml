@@ -87,10 +87,16 @@ jobs:
           echo "Set repository secret RAILWAY_TOKEN to a Railway project token."
           exit 1
 
+      - name: Use backend Railway config
+        working-directory: .
+        run: cp EDGMVP/railway.toml railway.toml
+
       - name: Link backend service
+        working-directory: .
         run: railway link --project "$RAILWAY_PROJECT_ID" --environment "$RAILWAY_ENVIRONMENT" --service "$RAILWAY_BACKEND_SERVICE_ID"
 
       - name: Deploy backend service
+        working-directory: .
         run: railway up --ci
 
   deploy-frontend:
@@ -118,10 +124,13 @@ jobs:
           exit 1
 
       - name: Use frontend Railway config
-        run: cp railway.frontend.toml railway.toml
+        working-directory: .
+        run: cp EDGMVP/railway.frontend.toml railway.toml
 
       - name: Link frontend service
+        working-directory: .
         run: railway link --project "$RAILWAY_PROJECT_ID" --environment "$RAILWAY_ENVIRONMENT" --service "$RAILWAY_FRONTEND_SERVICE_ID"
 
       - name: Deploy frontend service
+        working-directory: .
         run: railway up --ci

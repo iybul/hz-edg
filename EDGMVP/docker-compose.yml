@@ -18,8 +18,8 @@ services:
 
   backend:
     build:
-      context: .
-      dockerfile: docker/backend.Dockerfile
+      context: ..
+      dockerfile: EDGMVP/docker/backend.Dockerfile
     environment:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/sqf_docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
@@ -35,8 +35,8 @@ services:
 
   frontend:
     build:
-      context: .
-      dockerfile: docker/frontend.Dockerfile
+      context: ..
+      dockerfile: EDGMVP/docker/frontend.Dockerfile
     ports:
       - "3000:80"
     depends_on:
