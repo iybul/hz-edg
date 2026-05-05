@@ -22,6 +22,12 @@ defaults:
   run:
     working-directory: EDGMVP
 
+env:
+  RAILWAY_PROJECT_ID: bc5b10c8-4f1d-4ba3-89fc-703103a9c118
+  RAILWAY_ENVIRONMENT: production
+  RAILWAY_BACKEND_SERVICE_ID: 9b7a8938-2fde-406f-9bf1-8f2061f9f755
+  RAILWAY_FRONTEND_SERVICE_ID: 13c2cf11-b728-4f1e-ac69-a946908e1656
+
 jobs:
   validate:
     name: Validate Scaffold
@@ -63,7 +69,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      RAILWAY_BACKEND_SERVICE: ${{ vars.RAILWAY_BACKEND_SERVICE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -76,14 +81,17 @@ jobs:
       - name: Install Railway CLI
         run: npm install --global @railway/cli
 
-      - name: Require backend service name
-        if: env.RAILWAY_BACKEND_SERVICE == ''
+      - name: Require Railway token
+        if: env.RAILWAY_TOKEN == ''
         run: |
-          echo "Set repository variable RAILWAY_BACKEND_SERVICE to your Railway backend service name."
+          echo "Set repository secret RAILWAY_TOKEN to a Railway project token."
           exit 1
 
+      - name: Link backend service
+        run: railway link --project "$RAILWAY_PROJECT_ID" --environment "$RAILWAY_ENVIRONMENT" --service "$RAILWAY_BACKEND_SERVICE_ID"
+
       - name: Deploy backend service
-        run: railway up --service "$RAILWAY_BACKEND_SERVICE" --ci
+        run: railway up --ci
 
   deploy-frontend:
     name: Deploy Frontend
@@ -91,29 +99,29 @@ jobs:
     runs-on: ubuntu-latest
     env:
       RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
-      RAILWAY_FRONTEND_SERVICE: ${{ vars.RAILWAY_FRONTEND_SERVICE }}
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Skip when frontend service is not configured
-        if: env.RAILWAY_FRONTEND_SERVICE == ''
-        run: echo "Skipping frontend deploy because RAILWAY_FRONTEND_SERVICE is not set."
-
       - name: Setup Node
-        if: env.RAILWAY_FRONTEND_SERVICE != ''
         uses: actions/setup-node@v4
         with:
           node-version: 22
 
       - name: Install Railway CLI
-        if: env.RAILWAY_FRONTEND_SERVICE != ''
         run: npm install --global @railway/cli
 
+      - name: Require Railway token
+        if: env.RAILWAY_TOKEN == ''
+        run: |
+          echo "Set repository secret RAILWAY_TOKEN to a Railway project token."
+          exit 1
+
       - name: Use frontend Railway config
-        if: env.RAILWAY_FRONTEND_SERVICE != ''
         run: cp railway.frontend.toml railway.toml
 
+      - name: Link frontend service
+        run: railway link --project "$RAILWAY_PROJECT_ID" --environment "$RAILWAY_ENVIRONMENT" --service "$RAILWAY_FRONTEND_SERVICE_ID"
+
       - name: Deploy frontend service
-        if: env.RAILWAY_FRONTEND_SERVICE != ''
-        run: railway up --service "$RAILWAY_FRONTEND_SERVICE" --ci
+        run: railway up --ci
