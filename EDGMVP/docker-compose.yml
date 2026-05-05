@@ -37,6 +37,9 @@ services:
     build:
       context: ..
       dockerfile: EDGMVP/docker/frontend.Dockerfile
+    environment:
+      API_UPSTREAM: http://backend:8080
+      NGINX_RESOLVER: 127.0.0.11
     ports:
       - "3000:80"
     depends_on:
