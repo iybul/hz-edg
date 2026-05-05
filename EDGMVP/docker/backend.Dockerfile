@@ -1,8 +1,9 @@
 FROM rust:1-bookworm AS builder
 
 WORKDIR /app
-COPY EDGMVP/backend/Cargo.toml EDGMVP/backend/Cargo.lock* ./
-COPY EDGMVP/backend/src ./src
+ARG APP_ROOT=EDGMVP
+COPY ${APP_ROOT}/backend/Cargo.toml ${APP_ROOT}/backend/Cargo.lock ./
+COPY ${APP_ROOT}/backend/src ./src
 
 RUN cargo build --release
 

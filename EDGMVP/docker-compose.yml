@@ -18,8 +18,10 @@ services:
 
   backend:
     build:
-      context: ..
-      dockerfile: EDGMVP/docker/backend.Dockerfile
+      context: .
+      dockerfile: docker/backend.Dockerfile
+      args:
+        APP_ROOT: .
     environment:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/sqf_docs
       OPENAI_API_KEY: ${OPENAI_API_KEY}
@@ -35,8 +37,10 @@ services:
 
   frontend:
     build:
-      context: ..
-      dockerfile: EDGMVP/docker/frontend.Dockerfile
+      context: .
+      dockerfile: docker/frontend.Dockerfile
+      args:
+        APP_ROOT: .
     environment:
       API_UPSTREAM: http://backend:8080
       NGINX_RESOLVER: 127.0.0.11
