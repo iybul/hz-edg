@@ -1,0 +1,15 @@
+body {
+  margin: 0;
+  font-family: 'Tinos', 'Times New Roman', serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+* {
+  font-family: 'Tinos', 'Times New Roman', serif;
+}
+
+code, pre {
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace !important;
+}

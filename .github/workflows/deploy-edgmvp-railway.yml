@@ -1,0 +1,119 @@
+name: Deploy EDGMVP to Railway
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - ".github/workflows/deploy-edgmvp-railway.yml"
+      - "EDGMVP/backend/**"
+      - "EDGMVP/docker/**"
+      - "EDGMVP/frontend/**"
+      - "EDGMVP/railway.toml"
+      - "EDGMVP/railway.frontend.toml"
+      - "EDGMVP/schema.sql"
+  workflow_dispatch:
+
+concurrency:
+  group: railway-edgmvp-${{ github.ref }}
+  cancel-in-progress: true
+
+defaults:
+  run:
+    working-directory: EDGMVP
+
+jobs:
+  validate:
+    name: Validate Scaffold
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: 1.93.0
+
+      - name: Check backend
+        working-directory: EDGMVP/backend
+        run: cargo check
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: EDGMVP/frontend/package-lock.json
+
+      - name: Install frontend dependencies
+        working-directory: EDGMVP/frontend
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: EDGMVP/frontend
+        run: npm run build
+
+      - name: Validate Compose file
+        run: docker compose config
+
+  deploy-backend:
+    name: Deploy Backend
+    needs: validate
+    runs-on: ubuntu-latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RAILWAY_BACKEND_SERVICE: ${{ vars.RAILWAY_BACKEND_SERVICE }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Railway CLI
+        run: npm install --global @railway/cli
+
+      - name: Require backend service name
+        if: env.RAILWAY_BACKEND_SERVICE == ''
+        run: |
+          echo "Set repository variable RAILWAY_BACKEND_SERVICE to your Railway backend service name."
+          exit 1
+
+      - name: Deploy backend service
+        run: railway up --service "$RAILWAY_BACKEND_SERVICE" --ci
+
+  deploy-frontend:
+    name: Deploy Frontend
+    needs: validate
+    runs-on: ubuntu-latest
+    env:
+      RAILWAY_TOKEN: ${{ secrets.RAILWAY_TOKEN }}
+      RAILWAY_FRONTEND_SERVICE: ${{ vars.RAILWAY_FRONTEND_SERVICE }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Skip when frontend service is not configured
+        if: env.RAILWAY_FRONTEND_SERVICE == ''
+        run: echo "Skipping frontend deploy because RAILWAY_FRONTEND_SERVICE is not set."
+
+      - name: Setup Node
+        if: env.RAILWAY_FRONTEND_SERVICE != ''
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install Railway CLI
+        if: env.RAILWAY_FRONTEND_SERVICE != ''
+        run: npm install --global @railway/cli
+
+      - name: Use frontend Railway config
+        if: env.RAILWAY_FRONTEND_SERVICE != ''
+        run: cp railway.frontend.toml railway.toml
+
+      - name: Deploy frontend service
+        if: env.RAILWAY_FRONTEND_SERVICE != ''
+        run: railway up --service "$RAILWAY_FRONTEND_SERVICE" --ci
