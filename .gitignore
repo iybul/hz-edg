@@ -1,0 +1,55 @@
+# OS and editor files
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Environment and secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.crt
+credentials.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Node and frontend builds
+node_modules/
+dist/
+build/
+.vite/
+.turbo/
+.next/
+coverage/
+*.tsbuildinfo
+
+# Rust
+target/
+Cargo.lock.tmp
+
+# Database and local runtime data
+*.sqlite
+*.sqlite3
+*.db
+tmp/
+temp/
+
+# Docker and deployment local files
+.docker/
+docker-compose.override.yml
+
+# Generated documents
+*.docx
+*.pdf
+
+# Cursor and local agent artifacts
+.cursor/plans/
