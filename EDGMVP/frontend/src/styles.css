@@ -1,6 +1,28 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+@import "tailwindcss";
+@config "../tailwind.config.ts";
+
+:root {
+  --cream-50: #ffffff;
+  --cream-100: #f7f9fc;
+  --cream-200: #edf1f7;
+  --ink: #0f4c81;
+  --ink-900: #0a3a5f;
+  --ink-800: #0a3a5f;
+  --ink-700: #1a5f9e;
+  --ink-600: #5a6c7d;
+  --text: #2c3e50;
+  --heading: #212529;
+  --zinc-250: #dcdcd8;
+  --zinc-350: #a8a8a3;
+  --scarlet: #ff6b35;
+  --scarlet-600: #e85a26;
+  --page-fade-top: #f0f7ff;
+}
+
+html {
+  scroll-behavior: smooth;
+  background-color: var(--cream-50);
+}
 
 * {
   box-sizing: border-box;
@@ -9,6 +31,104 @@
 body {
   margin: 0;
   font-family:
-    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    "Inter", ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
     sans-serif;
+  font-feature-settings: "ss01", "cv11";
+  color: var(--text);
+  background-color: var(--cream-50);
+  background-image: linear-gradient(to bottom, var(--page-fade-top), var(--cream-50) 320px);
+  background-repeat: no-repeat;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+::selection {
+  background-color: var(--ink);
+  color: var(--cream-50);
+}
+
+/* Subtle scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(15, 76, 129, 0.22);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(15, 76, 129, 0.4);
+  background-clip: padding-box;
+}
+
+/* Mono utility helpers */
+.eyebrow {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-600);
+}
+
+.eyebrow-on-dark {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* Decorative section divider */
+.hairline {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(10, 10, 10, 0.18),
+    transparent
+  );
+}
+
+.hairline-on-dark {
+  height: 1px;
+  background: linear-gradient(
+    to right,
+    transparent,
+    rgba(255, 255, 255, 0.18),
+    transparent
+  );
+}
+
+/* Subtle card lift on hover */
+.lift-on-hover {
+  transition:
+    transform 200ms cubic-bezier(0.2, 0, 0, 1),
+    box-shadow 200ms cubic-bezier(0.2, 0, 0, 1),
+    border-color 200ms cubic-bezier(0.2, 0, 0, 1);
+}
+.lift-on-hover:hover {
+  transform: translateY(-2px);
+}
+
+/* Marquee-style tag tape */
+.tape {
+  font-family: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 10.5px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
 }

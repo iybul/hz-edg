@@ -1,12 +1,11 @@
 import { useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { CheckCircle2 } from "lucide-react";
+import { Check } from "lucide-react";
 import { generateDocument } from "../../lib/api";
 import { downloadMarkdownAsPdf } from "../../lib/pdf";
 import { useQuestionnaireStore } from "../../stores/questionnaireStore";
 import { GenerateDocumentResponse } from "../../types/questionnaire";
 import { Button } from "../ui/button";
-import { Card, CardContent, CardHeader } from "../ui/card";
 import { FacilityInfoStep } from "./FacilityInfoStep";
 import { GeneratedDocumentReader } from "./GeneratedDocumentReader";
 import { GeneratingState } from "./GeneratingState";
@@ -14,7 +13,7 @@ import { HaccpStep } from "./HaccpStep";
 import { InfrastructureStep } from "./InfrastructureStep";
 import { useDocumentPolling } from "../../hooks/useDocumentPolling";
 
-const steps = ["Facility Info", "HACCP Details", "Infrastructure"] as const;
+const steps = ["Facility", "HACCP", "Infrastructure"] as const;
 
 export function Wizard() {
   const [stepIndex, setStepIndex] = useState(0);
@@ -44,34 +43,82 @@ export function Wizard() {
   const canSubmit = form.facility.name.trim() && form.facility.address.trim();
 
   return (
-    <Card>
-      <CardHeader>
-        <div className="flex flex-wrap gap-3">
+    <div className="overflow-hidden rounded-xl border border-cream-50/15 bg-cream-50 text-ink shadow-ink">
+      <div className="border-b border-ink/10 bg-white px-6 py-7 md:px-10 md:py-9">
+        <div className="flex flex-col gap-2">
+          <span className="font-mono text-[11px] uppercase tracking-[0.18em] text-scarlet">
+            / Documentation Wizard
+          </span>
+          <h2 className="text-[28px] font-extrabold leading-tight tracking-tightest text-ink md:text-[32px]">
+            Build your SQF manual
+          </h2>
+          <p className="max-w-2xl text-[14.5px] leading-7 text-ink-600">
+            Move through the required context in a focused workflow. The more
+            specific your answers are, the more useful the generated manual will
+            be.
+          </p>
+        </div>
+
+        <div className="mt-7 grid gap-px overflow-hidden rounded-lg border border-ink/10 bg-ink/10 md:grid-cols-3">
           {steps.map((step, index) => {
             const isActive = index === stepIndex;
             const isComplete = index < stepIndex;
-
             return (
-              <div
+              <button
                 key={step}
-                className={`flex items-center gap-2 rounded-full px-3 py-2 text-sm ${
-                  isActive ? "bg-blue-100 text-blue-700" : "bg-slate-100 text-slate-600"
+                type="button"
+                onClick={() => {
+                  if (index <= stepIndex) {
+                    setStepIndex(index);
+                  }
+                }}
+                className={`flex items-center gap-3 px-4 py-3.5 text-left transition ${
+                  isActive
+                    ? "bg-ink text-cream-50"
+                    : isComplete
+                      ? "bg-cream-100 text-ink hover:bg-cream-200"
+                      : "bg-white text-ink-600"
                 }`}
               >
-                {isComplete ? <CheckCircle2 className="h-4 w-4" /> : <span>{index + 1}</span>}
-                {step}
-              </div>
+                <span
+                  className={`grid h-7 w-7 place-items-center rounded-md font-mono text-[11px] font-medium ${
+                    isActive
+                      ? "bg-cream-50 text-ink"
+                      : isComplete
+                        ? "bg-scarlet text-white"
+                        : "border border-ink/15 bg-white text-ink-600"
+                  }`}
+                >
+                  {isComplete ? <Check className="h-3.5 w-3.5" strokeWidth={3} /> : `0${index + 1}`}
+                </span>
+                <div>
+                  <div
+                    className={`font-mono text-[10.5px] uppercase tracking-[0.18em] ${
+                      isActive ? "text-cream-50/60" : "text-ink-600"
+                    }`}
+                  >
+                    Step {index + 1}
+                  </div>
+                  <div className="text-[14px] font-semibold tracking-tight">
+                    {step}
+                  </div>
+                </div>
+              </button>
             );
           })}
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="space-y-8">
+      </div>
+
+      <div className="bg-cream-50 px-6 py-8 md:px-10 md:py-10">
+        <div className="space-y-10">
           {currentStep}
 
           {mutation.isError ? (
-            <div className="rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700">
-              {mutation.error.message}
+            <div className="rounded-md border border-scarlet/30 bg-scarlet-50 p-4 text-[13.5px] text-scarlet-700">
+              <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-scarlet-600">
+                Error
+              </span>
+              <p className="mt-1">{mutation.error.message}</p>
             </div>
           ) : null}
 
@@ -90,34 +137,37 @@ export function Wizard() {
             />
           ) : null}
 
-          <div className="flex justify-between gap-3">
+          <div className="flex flex-col-reverse gap-3 border-t border-ink/10 pt-8 sm:flex-row sm:items-center sm:justify-between">
             <Button
               type="button"
               variant="secondary"
               disabled={stepIndex === 0 || mutation.isPending}
               onClick={() => setStepIndex((index) => Math.max(index - 1, 0))}
             >
-              Back
+              ← Back
             </Button>
             {stepIndex < steps.length - 1 ? (
               <Button
                 type="button"
-                onClick={() => setStepIndex((index) => Math.min(index + 1, steps.length - 1))}
+                onClick={() =>
+                  setStepIndex((index) => Math.min(index + 1, steps.length - 1))
+                }
               >
-                Continue
+                Continue →
               </Button>
             ) : (
               <Button
                 type="button"
+                variant="scarlet"
                 disabled={!canSubmit || mutation.isPending}
                 onClick={() => mutation.mutate(form)}
               >
-                {mutation.isPending ? "Generating..." : "Generate SQF Manual"}
+                {mutation.isPending ? "Generating…" : "Generate SQF manual"}
               </Button>
             )}
           </div>
         </div>
-      </CardContent>
-    </Card>
+      </div>
+    </div>
   );
 }

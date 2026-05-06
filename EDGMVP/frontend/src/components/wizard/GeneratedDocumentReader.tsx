@@ -28,97 +28,111 @@ export function GeneratedDocumentReader({
   }
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-white">
-      <div className="flex flex-col gap-4 border-b border-slate-200 p-5 md:flex-row md:items-center md:justify-between">
+    <div className="overflow-hidden rounded-xl border border-ink/10 bg-white">
+      <div className="flex flex-col gap-4 border-b border-ink/10 bg-cream-100 p-6 md:flex-row md:items-center md:justify-between">
         <div className="flex items-start gap-3">
-          <div className="rounded-lg bg-blue-100 p-2 text-blue-700">
-            <FileText className="h-5 w-5" />
+          <div className="grid h-10 w-10 shrink-0 place-items-center rounded-md border border-ink/15 bg-white text-ink">
+            <FileText className="h-4 w-4" />
           </div>
           <div>
-            <p className="text-sm font-semibold uppercase tracking-wide text-blue-600">
-              Generated Manual
-            </p>
-            <h3 className="text-xl font-semibold">
+            <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-scarlet">
+              Generated manual
+            </span>
+            <h3 className="mt-1 text-[22px] font-extrabold leading-tight tracking-tightest text-ink">
               {facilityName ? `${facilityName} SQF Manual` : "SQF Manual"}
             </h3>
-            <p className="mt-1 text-sm text-slate-600">
-              Review the generated manual section by section, then download the full document.
+            <p className="mt-1.5 text-[13.5px] leading-6 text-ink-600">
+              Review the generated manual section by section, then download the
+              full document.
             </p>
           </div>
         </div>
-        <Button type="button" onClick={onDownloadPdf} className="gap-2">
-          <Download className="h-4 w-4" />
+        <Button type="button" variant="scarlet" onClick={onDownloadPdf}>
+          <Download className="h-3.5 w-3.5" />
           Download PDF
         </Button>
       </div>
 
       <div className="grid gap-0 md:grid-cols-[260px_1fr]">
-        <nav className="max-h-[560px] overflow-y-auto border-b border-slate-200 p-3 md:border-b-0 md:border-r">
-          <p className="px-2 pb-2 text-xs font-semibold uppercase tracking-wide text-slate-500">
+        <nav className="max-h-[560px] overflow-y-auto border-b border-ink/10 bg-cream-50 p-3 md:border-b-0 md:border-r">
+          <p className="px-2 pb-3 font-mono text-[10.5px] uppercase tracking-[0.18em] text-ink-600">
             Sections
           </p>
-          <div className="space-y-1">
+          <div className="space-y-0.5">
             {sections.map((section, index) => (
               <button
                 key={section.id}
                 type="button"
-                className={`w-full rounded-md px-3 py-2 text-left text-sm transition ${
+                className={`group flex w-full items-center gap-2 rounded-md px-3 py-2 text-left text-[13px] transition ${
                   index === activeIndex
-                    ? "bg-blue-100 font-medium text-blue-700"
-                    : "text-slate-700 hover:bg-slate-100"
+                    ? "bg-ink text-cream-50"
+                    : "text-ink-600 hover:bg-cream-100 hover:text-ink"
                 }`}
                 onClick={() => setActiveIndex(index)}
               >
-                <span className={section.level > 1 ? "pl-3" : undefined}>{section.title}</span>
+                <span
+                  className={`font-mono text-[10px] tracking-[0.16em] ${
+                    index === activeIndex ? "text-cream-50/60" : "text-ink-600/60"
+                  }`}
+                >
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className={section.level > 1 ? "pl-1.5" : undefined}>
+                  {section.title}
+                </span>
               </button>
             ))}
           </div>
         </nav>
 
-        <article className="min-h-[420px] p-6">
-          <div className="mb-5 flex items-center justify-between gap-3">
+        <article className="min-h-[420px] p-6 md:p-8">
+          <div className="mb-6 flex items-center justify-between gap-3">
             <div>
-              <p className="text-sm text-slate-500">
-                Section {activeIndex + 1} of {sections.length}
-              </p>
-              <h4 className="mt-1 text-2xl font-semibold">{activeSection.title}</h4>
+              <span className="font-mono text-[10.5px] uppercase tracking-[0.18em] text-scarlet">
+                Section {activeIndex + 1} / {sections.length}
+              </span>
+              <h4 className="mt-2 text-[26px] font-extrabold leading-tight tracking-tightest text-ink md:text-[30px]">
+                {activeSection.title}
+              </h4>
             </div>
           </div>
 
-          <div className="space-y-3 text-sm leading-7 text-slate-700">
+          <div className="space-y-3 text-[15px] leading-7 text-ink">
             {activeSection.body.map((line, index) => (
               <MarkdownLine key={`${activeSection.id}-${index}`} line={line} />
             ))}
           </div>
 
-          <div className="mt-8 flex justify-between gap-3 border-t border-slate-200 pt-4">
+          <div className="mt-10 flex justify-between gap-3 border-t border-ink/10 pt-5">
             <Button
               type="button"
               variant="secondary"
               disabled={activeIndex === 0}
               onClick={() => setActiveIndex((index) => Math.max(index - 1, 0))}
             >
-              <ChevronLeft className="mr-1 h-4 w-4" />
+              <ChevronLeft className="h-3.5 w-3.5" />
               Previous
             </Button>
             <Button
               type="button"
               variant="secondary"
               disabled={activeIndex === sections.length - 1}
-              onClick={() => setActiveIndex((index) => Math.min(index + 1, sections.length - 1))}
+              onClick={() =>
+                setActiveIndex((index) => Math.min(index + 1, sections.length - 1))
+              }
             >
               Next
-              <ChevronRight className="ml-1 h-4 w-4" />
+              <ChevronRight className="h-3.5 w-3.5" />
             </Button>
           </div>
         </article>
       </div>
 
-      <details className="border-t border-slate-200 p-5">
-        <summary className="cursor-pointer text-sm font-medium text-slate-700">
+      <details className="border-t border-ink/10 bg-cream-50 p-5">
+        <summary className="cursor-pointer font-mono text-[11px] uppercase tracking-[0.18em] text-ink hover:text-scarlet">
           View raw generated Markdown
         </summary>
-        <pre className="mt-4 max-h-80 overflow-auto rounded-md bg-slate-950 p-4 text-xs text-slate-100">
+        <pre className="mt-4 max-h-80 overflow-auto rounded-md border border-ink/15 bg-ink p-5 font-mono text-[12px] leading-6 text-cream-50">
           {plainDocument}
         </pre>
       </details>

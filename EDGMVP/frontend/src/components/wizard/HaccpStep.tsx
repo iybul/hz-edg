@@ -2,6 +2,7 @@ import { ClipboardCheck } from "lucide-react";
 import { useQuestionnaireStore } from "../../stores/questionnaireStore";
 import { Input, Textarea } from "../ui/input";
 import { FormField } from "./FormField";
+import { StepHeader } from "./StepHeader";
 
 function parseList(value: string) {
   return value
@@ -15,13 +16,15 @@ export function HaccpStep() {
   const updateHaccp = useQuestionnaireStore((state) => state.updateHaccp);
 
   return (
-    <section className="space-y-5">
-      <div className="flex items-center gap-3">
-        <ClipboardCheck className="h-5 w-5 text-blue-600" />
-        <h2 className="text-xl font-semibold">HACCP/Product Details</h2>
-      </div>
+    <section className="space-y-8">
+      <StepHeader
+        step="02"
+        title="HACCP & product details"
+        description="Describe the process flow and known hazards we should plan for."
+        icon={<ClipboardCheck className="h-4 w-4" />}
+      />
       <FormField
-        label="Product Types"
+        label="Product types"
         htmlFor="product-types"
         hint="Separate multiple products with commas."
       >
@@ -32,7 +35,7 @@ export function HaccpStep() {
           placeholder="Ready-to-eat salads, fresh-cut fruit"
         />
       </FormField>
-      <FormField label="Process Flow" htmlFor="process-flow">
+      <FormField label="Process flow" htmlFor="process-flow">
         <Textarea
           id="process-flow"
           value={haccp.processFlow}
@@ -41,7 +44,7 @@ export function HaccpStep() {
         />
       </FormField>
       <FormField
-        label="Known Hazards"
+        label="Known hazards"
         htmlFor="hazards"
         hint="Separate biological, chemical, and physical hazards with commas."
       >

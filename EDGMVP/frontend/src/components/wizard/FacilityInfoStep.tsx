@@ -1,20 +1,23 @@
 import { Building2 } from "lucide-react";
 import { useQuestionnaireStore } from "../../stores/questionnaireStore";
-import { Input } from "../ui/input";
+import { Input, Select } from "../ui/input";
 import { FormField } from "./FormField";
+import { StepHeader } from "./StepHeader";
 
 export function FacilityInfoStep() {
   const facility = useQuestionnaireStore((state) => state.form.facility);
   const updateFacility = useQuestionnaireStore((state) => state.updateFacility);
 
   return (
-    <section className="space-y-5">
-      <div className="flex items-center gap-3">
-        <Building2 className="h-5 w-5 text-blue-600" />
-        <h2 className="text-xl font-semibold">Facility Info</h2>
-      </div>
-      <div className="grid gap-5 md:grid-cols-2">
-        <FormField label="Facility Name" htmlFor="facility-name">
+    <section className="space-y-8">
+      <StepHeader
+        step="01"
+        title="Facility info"
+        description="Tell us about the operating site this manual covers."
+        icon={<Building2 className="h-4 w-4" />}
+      />
+      <div className="grid gap-6 md:grid-cols-2">
+        <FormField label="Facility name" htmlFor="facility-name">
           <Input
             id="facility-name"
             value={facility.name}
@@ -22,10 +25,9 @@ export function FacilityInfoStep() {
             placeholder="Acme Foods Plant 1"
           />
         </FormField>
-        <FormField label="SQF Category" htmlFor="sqf-category">
-          <select
+        <FormField label="SQF category" htmlFor="sqf-category">
+          <Select
             id="sqf-category"
-            className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm outline-none ring-blue-500 transition focus:ring-2"
             value={facility.sqfCategory}
             onChange={(event) => updateFacility({ sqfCategory: event.target.value })}
           >
@@ -35,7 +37,7 @@ export function FacilityInfoStep() {
             <option value="food_packaging">Food Packaging</option>
             <option value="quality_code">Quality Code</option>
             <option value="other">Other</option>
-          </select>
+          </Select>
         </FormField>
         <FormField label="Address" htmlFor="facility-address">
           <Input
@@ -45,7 +47,7 @@ export function FacilityInfoStep() {
             placeholder="123 Quality Way, Denver, CO"
           />
         </FormField>
-        <FormField label="Contact Email" htmlFor="contact-email">
+        <FormField label="Contact email" htmlFor="contact-email">
           <Input
             id="contact-email"
             type="email"
