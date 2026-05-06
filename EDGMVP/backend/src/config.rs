@@ -16,6 +16,7 @@ impl Config {
             openai_model: env::var("OPENAI_MODEL").unwrap_or_else(|_| "gpt-4o".into()),
             server_host: env::var("SERVER_HOST").unwrap_or_else(|_| "0.0.0.0".into()),
             server_port: env::var("SERVER_PORT")
+                .or_else(|_| env::var("PORT"))
                 .ok()
                 .and_then(|value| value.parse().ok())
                 .unwrap_or(8080),

@@ -40,6 +40,7 @@ pub struct InfrastructureDetails {
 pub struct GenerateDocumentResponse {
     pub document_id: Uuid,
     pub status: DocumentStatus,
+    pub markdown_content: String,
     pub markdown_preview: String,
 }
 

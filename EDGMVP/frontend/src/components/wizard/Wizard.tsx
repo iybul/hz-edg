@@ -2,11 +2,13 @@ import { useMemo, useState } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { CheckCircle2 } from "lucide-react";
 import { generateDocument } from "../../lib/api";
+import { downloadMarkdownAsPdf } from "../../lib/pdf";
 import { useQuestionnaireStore } from "../../stores/questionnaireStore";
 import { GenerateDocumentResponse } from "../../types/questionnaire";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardHeader } from "../ui/card";
 import { FacilityInfoStep } from "./FacilityInfoStep";
+import { GeneratedDocumentReader } from "./GeneratedDocumentReader";
 import { GeneratingState } from "./GeneratingState";
 import { HaccpStep } from "./HaccpStep";
 import { InfrastructureStep } from "./InfrastructureStep";
@@ -73,10 +75,18 @@ export function Wizard() {
             </div>
           ) : null}
 
-          {generation ? (
-            <GeneratingState
-              status={statusQuery.data}
-              markdownPreview={generation.markdownPreview}
+          {generation ? <GeneratingState status={statusQuery.data} /> : null}
+
+          {generation?.markdownContent ? (
+            <GeneratedDocumentReader
+              markdown={generation.markdownContent}
+              facilityName={form.facility.name}
+              onDownloadPdf={() =>
+                downloadMarkdownAsPdf(
+                  generation.markdownContent,
+                  `${form.facility.name || "sqf-manual"}-food-safety-manual.pdf`
+                )
+              }
             />
           ) : null}
 

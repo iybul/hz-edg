@@ -28,6 +28,7 @@ export interface QuestionnaireForm {
 export interface GenerateDocumentResponse {
   documentId: string;
   status: DocumentStatus;
+  markdownContent: string;
   markdownPreview: string;
 }
 

@@ -17,6 +17,8 @@ cp frontend/.env.example frontend/.env
 docker compose up --build
 ```
 
+This is hosted in railway
+
 The frontend runs at `http://localhost:3000`, and the backend health check is available at `http://localhost:8080/health`.
 
 ## Manual Checks

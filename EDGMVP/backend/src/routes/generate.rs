@@ -25,6 +25,7 @@ pub async fn generate_document(
     Ok(HttpResponse::Accepted().json(GenerateDocumentResponse {
         document_id: Uuid::new_v4(),
         status: DocumentStatus::Completed,
+        markdown_content: markdown.clone(),
         markdown_preview: markdown.chars().take(1_000).collect(),
     }))
 }
